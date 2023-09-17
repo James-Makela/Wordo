@@ -252,11 +252,11 @@ def colour_score(guess, score):
             if 'green' not in keyboard[ord(letter) - ord('A')] and 'yellow' not in keyboard[ord(letter) - ord('A')]:
                 keyboard[ord(letter) - ord('A')] = " "
         elif score[i] == 1:
-            style = "bold black on yellow"
+            style = "bold black on #d1b036"
             if 'green' not in keyboard[ord(letter) - ord('A')]:
                 keyboard[ord(letter) - ord('A')] = f"[{style}]{letter}[/]"
         elif score[i] == 2:
-            style = "bold black on green"
+            style = "bold black on #6aaa64"
             keyboard[ord(letter) - ord('A')] = f"[{style}]{letter}[/]"
 
         print_item.append(f"[{style}]{guess[i]}[/]")
@@ -374,12 +374,12 @@ def view_stats():
                       f"Max streak: {lines['Max streak']}\n"
                       f"Win %: {round(wins / int(lines['Games played']) * 100)}\n"
                       f"Guess Distribution:\n"
-                      f"1: {math.ceil(int(lines['1']) / wins * 50) * '|'}\n"
-                      f"2: {math.ceil(int(lines['2']) / wins * 50) * '|'}\n"
-                      f"3: {math.ceil(int(lines['3']) / wins * 50) * '|'}\n"
-                      f"4: {math.ceil(int(lines['4']) / wins * 50) * '|'}\n"
-                      f"5: {math.ceil(int(lines['5']) / wins * 50) * '|'}\n"
-                      f"6: {math.ceil(int(lines['6']) / wins * 50) * '|'}\n")
+                      f"1: [#6aaa64]{math.ceil(int(lines['1']) / wins * 50) * '❚'}\n[/]"
+                      f"2: [#6aaa64]{math.ceil(int(lines['2']) / wins * 50) * '❚'}\n[/]"
+                      f"3: [#6aaa64]{math.ceil(int(lines['3']) / wins * 50) * '❚'}\n[/]"
+                      f"4: [#6aaa64]{math.ceil(int(lines['4']) / wins * 50) * '❚'}\n[/]"
+                      f"5: [#6aaa64]{math.ceil(int(lines['5']) / wins * 50) * '❚'}\n[/]"
+                      f"6: [#6aaa64]{math.ceil(int(lines['6']) / wins * 50) * '❚'}\n[/]")
     else:
         console.print("No wins yet")
 
