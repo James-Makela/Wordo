@@ -34,7 +34,8 @@ TARGET_WORDS = './word-bank/target_words.txt'
 
 words_entered = []
 
-keyboard = [chr(i) for i in range(ord('A'), ord('Z')+1)]
+
+keyboard = [chr(i) for i in range(ord('A'), ord('Z') + 1)]
 keymap = [keyboard.index(letter) for letter in 'QWERTYUIOPASDFGHJKLZXCVBNM']
 stats_location = "./stats"
 
@@ -47,6 +48,7 @@ def play():
     word_of_the_day = get_target_word().upper()
     # build a list of valid words (words that can be entered in the UI):
     valid_words = get_valid_words()
+    fresh_game()
     # do the following in an iteration construct
     print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
     for i in range(MAX_ATTEMPTS):
@@ -294,10 +296,10 @@ def main_menu():
         console.print(
             "Welcome to Wordo, the word guessing game.\n"
             "Guess the 5 letter word in 6 tries or less.\n\n"
-            "\t1 - Play Game\n"
-            "\t2 - View Stats\n"
-            "\t3 - View Help\n"
-            "\t4 - Quit\n", justify="center")
+            "|  1 - Play Game    |\n"
+            "|  2 - View Stats   |\n"
+            "|  3 - View Help    |\n"
+            "|  4 - Quit         |\n", justify="center")
         choice = input()
         if choice == "1":
             play()
@@ -307,7 +309,6 @@ def main_menu():
             help()
         if choice == "4":
             sys.exit()
-
 
 
 def init_stats():
@@ -367,7 +368,7 @@ def view_stats():
         lines = make_dict(stats)
 
     wins = int(lines['Wins'])
-    if lines['Games played'] > 0:
+    if wins != 0:
         console.print(f"Games played: {lines['Games played']}\n"
                       f"Current streak: {lines['Current streak']}\n"
                       f"Max streak: {lines['Max streak']}\n"
@@ -380,10 +381,19 @@ def view_stats():
                       f"5: {math.ceil(int(lines['5']) / wins * 50) * '|'}\n"
                       f"6: {math.ceil(int(lines['6']) / wins * 50) * '|'}\n")
     else:
-        console.print("No stats yet")
+        console.print("No wins yet")
 
     console.print("Press enter to go back to the menu")
     input()
+    return
+
+
+def fresh_game():
+    global keyboard
+    global words_entered
+    keyboard = [chr(i) for i in range(ord('A'), ord('Z') + 1)]
+    words_entered = []
+
 
 
 def main(test=False):
