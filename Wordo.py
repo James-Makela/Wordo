@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import math
 import random
 import sys
 
@@ -315,6 +316,7 @@ def init_stats():
             "Games played: 0\n",
             "Current streak: 0\n",
             "Max streak: 0\n",
+            "Wins: 0\n"
             "1: 0\n",
             "2: 0\n",
             "3: 0\n",
@@ -327,16 +329,14 @@ def init_stats():
 
 
 def record_stats(win, tries=0):
-    lines = {}
     strings = []
     with open(stats_location) as stats:
-        for line in stats:
-            line = line.split(":")
-            lines[line[0]] = int(line[1])
+        lines = make_dict(stats)
 
     if win:
         lines["Games played"] += 1
         lines["Current streak"] += 1
+        lines["Wins"] += 1
         if lines["Current streak"] > lines["Max streak"]:
             lines["Max streak"] = lines["Current streak"]
         lines[str(tries + 1)] += 1
@@ -352,11 +352,36 @@ def record_stats(win, tries=0):
         stats.writelines(strings)
 
 
+def make_dict(stats):
+    lines = {}
+    for line in stats:
+        line = line.split(":")
+        lines[line[0]] = int(line[1])
+    return lines
+
+
 def view_stats():
+    init_stats()
     console.clear()
     with open(stats_location) as stats:
-        for line in stats:
-            console.print(line.strip())
+        lines = make_dict(stats)
+
+    wins = int(lines['Wins'])
+    if lines['Games played'] > 0:
+        console.print(f"Games played: {lines['Games played']}\n"
+                      f"Current streak: {lines['Current streak']}\n"
+                      f"Max streak: {lines['Max streak']}\n"
+                      f"Win %: {round(wins / int(lines['Games played']) * 100)}\n"
+                      f"Guess Distribution:\n"
+                      f"1: {math.ceil(int(lines['1']) / wins * 50) * '|'}\n"
+                      f"2: {math.ceil(int(lines['2']) / wins * 50) * '|'}\n"
+                      f"3: {math.ceil(int(lines['3']) / wins * 50) * '|'}\n"
+                      f"4: {math.ceil(int(lines['4']) / wins * 50) * '|'}\n"
+                      f"5: {math.ceil(int(lines['5']) / wins * 50) * '|'}\n"
+                      f"6: {math.ceil(int(lines['6']) / wins * 50) * '|'}\n")
+    else:
+        console.print("No stats yet")
+
     console.print("Press enter to go back to the menu")
     input()
 
