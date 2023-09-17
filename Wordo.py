@@ -44,7 +44,7 @@ def play():
     main_menu()
     for i in range(MAX_ATTEMPTS):
         output_buffer(print_list)
-        guess = ask_for_guess(valid_words).upper()
+        guess = ask_for_guess(valid_words, print_list).upper()
         score = score_guess(guess, word_of_the_day)
         # Put some of your own personality into this!
         print("Result of your guess:")
@@ -125,14 +125,21 @@ def get_target_word(file_path=TARGET_WORDS, seed=None):
     return words_of_day[seed]
 
 
-def ask_for_guess(valid_words):
+def ask_for_guess(valid_words, buffer):
     """Requests a guess from the user directly from stdout/in
     Returns:
         str: the guess chosen by the user. Ensures guess is a valid word of correct length in lowercase
     """
     guess = None
+    error_string = ""
     while guess is None:
+        output_buffer(buffer)
+        console.print(f"{error_string}", justify="center")
         guess_candidate = console.input(f'{" " * (console.width // 2 - 8)}Guess: ').lower()
+        if guess_candidate not in valid_words:
+            error_string = "[red on yellow]Invalid word[/]"
+        if guess_candidate in words_entered:
+            error_string = "[red on yellow]Word already entered[/]"
         if guess_candidate in valid_words and guess_candidate not in words_entered:
             guess = guess_candidate
             words_entered.append(guess_candidate)
