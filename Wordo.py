@@ -4,9 +4,9 @@ from rich.console import Console
 console = Console()
 """Guess-My-Word is a game where the player has to guess a word.
 <your description> 
-Author: <name>
-Company: <company>
-Copyright: <year>
+Author: James Makela
+Company: -
+Copyright: 2023
 
 """
 # Your code must use PEP8
