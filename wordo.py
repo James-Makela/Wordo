@@ -29,14 +29,12 @@ EXACT = 2  # X, +: right letter, right place 🟩
 MAX_ATTEMPTS = 6
 WORD_LENGTH = 5
 
-ALL_WORDS = './word-bank/all_words.txt'
-TARGET_WORDS = './word-bank/target_words.txt'
+ALL_WORDS = "./word-bank/all_words.txt"
+TARGET_WORDS = "./word-bank/target_words.txt"
 
 words_entered = []
-
-
-keyboard = [chr(i) for i in range(ord('A'), ord('Z') + 1)]
-keymap = [keyboard.index(letter) for letter in 'QWERTYUIOPASDFGHJKLZXCVBNM']
+keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
+keymap = [keyboard.index(letter) for letter in "QWERTYUIOPASDFGHJKLZXCVBNM"]
 stats_location = "./stats"
 
 
@@ -125,10 +123,11 @@ def ask_for_guess(valid_words, buffer):
     """
     guess = None
     error_string = ""
+    guess_candidate = ""
     while guess is None:
         output_buffer(buffer)
         console.print(f" {error_string} ", justify="center")
-        guess_candidate = console.input(f'{" " * (console.width // 2 - 8)}Guess: ').lower()
+        guess_candidate = console.input(f"{' ' * (console.width // 2 - 8)}Guess: ").lower()
         if guess_candidate == "exit":
             return guess_candidate
         if guess_candidate not in valid_words:
@@ -163,53 +162,53 @@ def score_guess(guess, target):
     return tuple(result)
 
 
-def help():
+def game_help():
     """Provides help for the game"""
     console.clear()
-    console.print('Welcome to Wordle\n\n'
-                  'Instructions:\n\n'
-                  '\t- Guess the correct word in 6 tries or less\n'
-                  '\t- Each guess must be a five letter word\n'
-                  '\t- As you make guesses the colours of the\n'
-                  '\t  letters will change to indicate how your\n'
-                  '\t  guess compares to the word of the day\n\n'
-                  'Some examples:\n\n'
-                  '┌─┬─┬─┬─┬─┐\n'
-                  '│P│E│A│R│[bold black on #6aaa64]S[/]│\n'
-                  '└─┴─┴─┴─┴─┘\n'
-                  '\t- Here the S is in the correct place\n\n'
-                  '┌─┬─┬─┬─┬─┐\n'
-                  '│A│P│P│[bold black on #d1b036]L[/]│E│\n'
-                  '└─┴─┴─┴─┴─┘\n'
-                  '\t- Here the L is in the target word,\n'
-                  '\t  but not in the correct spot\n\n'
-                  '┌─┬─┬─┬─┬─┐\n'
-                  '│G│R│A│P│E│\n'
-                  '└─┴─┴─┴─┴─┘\n'
-                  '\t- Here no letters are correct\n\n'
-                  'Press enter to go back to the main menu'
+    console.print("Welcome to Wordle\n\n"
+                  "Instructions:\n\n"
+                  "\t- Guess the correct word in 6 tries or less\n"
+                  "\t- Each guess must be a five letter word\n"
+                  "\t- As you make guesses the colours of the\n"
+                  "\t  letters will change to indicate how your\n"
+                  "\t  guess compares to the word of the day\n\n"
+                  "Some examples:\n\n"
+                  "┌─┬─┬─┬─┬─┐\n"
+                  "│P│E│A│R│[bold black on #6aaa64]S[/]│\n"
+                  "└─┴─┴─┴─┴─┘\n"
+                  "\t- Here the S is in the correct place\n\n"
+                  "┌─┬─┬─┬─┬─┐\n"
+                  "│A│P│P│[bold black on #d1b036]L[/]│E│\n"
+                  "└─┴─┴─┴─┴─┘\n"
+                  "\t- Here the L is in the target word,\n"
+                  "\t  but not in the correct spot\n\n"
+                  "┌─┬─┬─┬─┬─┐\n"
+                  "│G│R│A│P│E│\n"
+                  "└─┴─┴─┴─┴─┘\n"
+                  "\t- Here no letters are correct\n\n"
+                  "Press enter to go back to the main menu"
                   )
     input()
 
 
 def colour_score(guess, score):
     print_item = []
-    style = ''
+    style = ""
     for i, letter in enumerate(guess):
         if score[i] == 0:
-            style = 'white on #666666'
+            style = "white on #666666"
             # TODO: Simplify this
-            if 'green' not in keyboard[ord(letter) - ord('A')] and 'yellow' not in keyboard[ord(letter) - ord('A')]:
-                keyboard[ord(letter) - ord('A')] = " "
+            if "green" not in keyboard[ord(letter) - ord("A")] and "yellow" not in keyboard[ord(letter) - ord("A")]:
+                keyboard[ord(letter) - ord("A")] = " "
         elif score[i] == 1:
-            style = 'bold black on #d1b036'
-            if 'green' not in keyboard[ord(letter) - ord('A')]:
-                keyboard[ord(letter) - ord('A')] = f"[{style}]{letter}[/]"
+            style = "bold black on #d1b036"
+            if "green" not in keyboard[ord(letter) - ord("A")]:
+                keyboard[ord(letter) - ord("A")] = f"[{style}]{letter}[/]"
         elif score[i] == 2:
-            style = 'bold black on #6aaa64'
-            keyboard[ord(letter) - ord('A')] = f'[{style}]{letter}[/]'
+            style = "bold black on #6aaa64"
+            keyboard[ord(letter) - ord("A")] = f"[{style}]{letter}[/]"
 
-        print_item.append(f'[{style}]{guess[i]}[/]')
+        print_item.append(f"[{style}]{guess[i]}[/]")
     return print_item
 
 
@@ -229,8 +228,8 @@ def output_buffer(list_to_print):
         print_keyboard.append(keyboard[number])
 
     console.print("".join(print_keyboard[:10]), justify="center")
-    console.print(f' {"".join(print_keyboard[10:19])}', justify="center")
-    console.print(f'  {"".join(print_keyboard[19:])}\n', justify="center")
+    console.print(f" {''.join(print_keyboard[10:19])}", justify="center")
+    console.print(f"  {''.join(print_keyboard[19:])}\n", justify="center")
     console.print("Type 'exit' to return to the main menu", justify="center")
 
 
@@ -251,7 +250,7 @@ def main_menu():
         if choice == "2":
             view_stats()
         if choice == "3":
-            help()
+            game_help()
         if choice == "4":
             sys.exit()
 
@@ -313,7 +312,7 @@ def view_stats():
     with open(stats_location) as stats:
         lines = make_dict(stats)
 
-    wins = int(lines['Wins'])
+    wins = int(lines["Wins"])
     if wins != 0:
         console.print(f"Games played: {lines['Games played']}\n"
                       f"Current streak: {lines['Current streak']}\n"
@@ -337,7 +336,7 @@ def view_stats():
 def fresh_game():
     global keyboard
     global words_entered
-    keyboard = [chr(i) for i in range(ord('A'), ord('Z') + 1)]
+    keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
     words_entered = []
 
 
@@ -349,6 +348,6 @@ def main(test=False):
     return "Goodbye"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # print(main(test=True))
     main()
