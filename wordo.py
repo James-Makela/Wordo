@@ -54,6 +54,8 @@ def play():
     for i in range(MAX_ATTEMPTS):
         output_buffer(print_list)
         guess = ask_for_guess(valid_words, print_list).upper()
+        if guess.lower() == "exit":
+            return
         score = score_guess(guess, word_of_the_day)
         # Put some of your own personality into this!
         print("Result of your guess:")
@@ -127,6 +129,8 @@ def ask_for_guess(valid_words, buffer):
         output_buffer(buffer)
         console.print(f" {error_string} ", justify="center")
         guess_candidate = console.input(f'{" " * (console.width // 2 - 8)}Guess: ').lower()
+        if guess_candidate == "exit":
+            return guess_candidate
         if guess_candidate not in valid_words:
             error_string = "[red on yellow]Invalid word[/]"
         if guess_candidate in words_entered:
@@ -226,7 +230,8 @@ def output_buffer(list_to_print):
 
     console.print("".join(print_keyboard[:10]), justify="center")
     console.print(f' {"".join(print_keyboard[10:19])}', justify="center")
-    console.print(f'  {"".join(print_keyboard[19:])}', justify="center")
+    console.print(f'  {"".join(print_keyboard[19:])}\n', justify="center")
+    console.print("Type 'exit' to return to the main menu", justify="center")
 
 
 def main_menu():
