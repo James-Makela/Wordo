@@ -1,6 +1,21 @@
 import pytest
 from wordo import get_target_word
 from wordo import score_guess
+from wordo import get_valid_words
+from wordo import is_correct
+
+
+def test_is_correct():
+    assert is_correct((1,1,1,1,1)) == False
+    assert is_correct((2,2,2,2,1)) == False
+    assert is_correct((0,0,0,0,0)) == False
+    assert is_correct((2,2,2,2,2)) == True
+
+
+def test_get_valid_words():
+    assert get_valid_words()[0] == 'aahed'
+    assert get_valid_words()[-1] == 'zymic'
+    assert get_valid_words()[10:15] == ['abamp', 'aband', 'abase', 'abash', 'abask']
 
 
 def test_get_target_word():
@@ -21,6 +36,9 @@ def test_score_guess():
 
 def main():
     test_get_target_word()
+    test_score_guess()
+    test_get_valid_words()
+    test_is_correct()
 
 
 if __name__ == "__main__":

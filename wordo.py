@@ -78,15 +78,7 @@ def play():
 
 def is_correct(score):
     """Checks if the score is entirely correct and returns True if it is
-    Examples:
-    >>> is_correct((1,1,1,1,1))
-    False
-    >>> is_correct((2,2,2,2,1))
-    False
-    >>> is_correct((0,0,0,0,0))
-    False
-    >>> is_correct((2,2,2,2,2))
-    True"""
+    """
     if score == (2, 2, 2, 2, 2):
         return True
     return False
@@ -94,14 +86,6 @@ def is_correct(score):
 
 def get_valid_words(file_path=ALL_WORDS):
     """returns a list containing all valid words.
-    Note to test that the file is read correctly, use:
-    >>> get_valid_words()[0]
-    'aahed'
-    >>> get_valid_words()[-1]
-    'zymic'
-    >>> get_valid_words()[10:15]
-    ['abamp', 'aband', 'abase', 'abash', 'abask']
-
     """
     # read words from files and return a list containing all words that can be entered as guesses
     all_words = []
@@ -120,14 +104,6 @@ def get_target_word(file_path=TARGET_WORDS, seed=None):
 
     Returns:
         str: a random word from the file
-
-    How do you test that a random word chooser is choosing the correct words??
-    Discuss in class!
-    >>> get_target_word(seed=0)
-    'aback'
-    >>> get_target_word(seed=-1)
-    'zonal'
-
     """
     # read words from a file and return a random word (word of the day)
     words_of_day = []
@@ -164,24 +140,6 @@ def ask_for_guess(valid_words, buffer):
 def score_guess(guess, target):
     """given two strings of equal length, returns a tuple of ints representing the score of the guess
     against the target word (MISS, MISPLACED, or EXACT)
-    Here are some example (will run as doctest):
-
-    >>> score_guess('hello', 'hello')
-    (2, 2, 2, 2, 2)
-    >>> score_guess('drain', 'float')
-    (0, 0, 1, 0, 0)
-    >>> score_guess('hello', 'spams')
-    (0, 0, 0, 0, 0)
-
-    Try and pass the first few tests in the doctest before passing these tests.
-    >>> score_guess('gauge', 'range')
-    (0, 2, 0, 2, 2)
-    >>> score_guess('melee', 'erect')
-    (0, 1, 0, 1, 0)
-    >>> score_guess('array', 'spray')
-    (0, 0, 2, 2, 2)
-    >>> score_guess('train', 'tenor')
-    (2, 1, 0, 0, 1)
         """
     target_as_list = list(target)
     discard = []
@@ -208,41 +166,6 @@ def help():
     input()
 
 
-def format_score(guess, score):
-    """Formats a guess with a given score as output to the terminal.
-    The following is an example output (you can change it to meet your own creative ideas, 
-    but be sure to update these examples)
-    >>> print(format_score('hello', (0,0,0,0,0)))
-    H E L L O
-    _ _ _ _ _
-    >>> print(format_score('hello', (0,0,0,1,1)))
-    H E L L O
-    _ _ _ ? ?
-    >>> print(format_score('hello', (1,0,0,2,1)))
-    H E L L O
-    ? _ _ + ?
-    >>> print(format_score('hello', (2,2,2,2,2)))
-    H E L L O
-    + + + + +"""
-
-    print_item = []
-    for i in range(5):
-        if score[i] == MISS:
-            print_item.append('_ ')
-        elif score[i] == MISPLACED:
-            print_item.append('? ')
-        elif score[i] == EXACT:
-            print_item.append('+ ')
-    return_string = ""
-    for letter in guess:
-        return_string += f'{letter.upper()} '
-    return_string = return_string.rstrip()
-    return_string += '\n'
-    for item in print_item:
-        return_string += item
-    return return_string.rstrip()
-
-
 def colour_score(guess, score):
     print_item = []
     for i, letter in enumerate(guess):
@@ -263,12 +186,7 @@ def colour_score(guess, score):
     return print_item
 
 
-# Normal mode
-def print_guess(print_string):
-    # TODO: Does this need to be a function?
-    console.print(f'{"".join(print_string)}')
-
-
+# TODO: Rename list parameter
 def output_buffer(list):
     console.clear()
     console.print("< WORDO >", justify="center")
@@ -393,7 +311,6 @@ def fresh_game():
     global words_entered
     keyboard = [chr(i) for i in range(ord('A'), ord('Z') + 1)]
     words_entered = []
-
 
 
 def main(test=False):
