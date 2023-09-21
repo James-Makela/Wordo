@@ -1,4 +1,3 @@
-import pytest
 from wordo import get_target_word
 from wordo import score_guess
 from wordo import get_valid_words
@@ -6,10 +5,10 @@ from wordo import is_correct
 
 
 def test_is_correct():
-    assert is_correct((1,1,1,1,1)) == False
-    assert is_correct((2,2,2,2,1)) == False
-    assert is_correct((0,0,0,0,0)) == False
-    assert is_correct((2,2,2,2,2)) == True
+    assert not is_correct((1, 1, 1, 1, 1))
+    assert not is_correct((2, 2, 2, 2, 1))
+    assert not is_correct((0, 0, 0, 0, 0))
+    assert not is_correct((2, 2, 2, 2, 2))
 
 
 def test_get_valid_words():

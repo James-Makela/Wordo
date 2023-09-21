@@ -162,12 +162,35 @@ def score_guess(guess, target):
 def help():
     """Provides help for the game"""
     console.clear()
-    console.print('HALP!')
+    console.print('Welcome to Wordle\n\n'
+                  'Instructions:\n\n'
+                  '\t- Guess the correct word in 6 tries or less\n'
+                  '\t- Each guess must be a five letter word\n'
+                  '\t- As you make guesses the colours of the\n'
+                  '\t  letters will change to indicate how your\n'
+                  '\t  guess compares to the word of the day\n\n'
+                  'Some examples:\n\n'
+                  '┌─┬─┬─┬─┬─┐\n'
+                  '│P│E│A│R│[bold black on #6aaa64]S[/]│\n'
+                  '└─┴─┴─┴─┴─┘\n'
+                  '\t- Here the S is in the correct place\n\n'
+                  '┌─┬─┬─┬─┬─┐\n'
+                  '│A│P│P│[bold black on #d1b036]L[/]│E│\n'
+                  '└─┴─┴─┴─┴─┘\n'
+                  '\t- Here the L is in the target word,\n'
+                  '\t  but not in the correct spot\n\n'
+                  '┌─┬─┬─┬─┬─┐\n'
+                  '│G│R│A│P│E│\n'
+                  '└─┴─┴─┴─┴─┘\n'
+                  '\t- Here no letters are correct\n\n'
+                  'Press enter to go back to the main menu'
+                  )
     input()
 
 
 def colour_score(guess, score):
     print_item = []
+    style = ''
     for i, letter in enumerate(guess):
         if score[i] == 0:
             style = 'white on #666666'
@@ -175,26 +198,25 @@ def colour_score(guess, score):
             if 'green' not in keyboard[ord(letter) - ord('A')] and 'yellow' not in keyboard[ord(letter) - ord('A')]:
                 keyboard[ord(letter) - ord('A')] = " "
         elif score[i] == 1:
-            style = "bold black on #d1b036"
+            style = 'bold black on #d1b036'
             if 'green' not in keyboard[ord(letter) - ord('A')]:
                 keyboard[ord(letter) - ord('A')] = f"[{style}]{letter}[/]"
         elif score[i] == 2:
-            style = "bold black on #6aaa64"
-            keyboard[ord(letter) - ord('A')] = f"[{style}]{letter}[/]"
+            style = 'bold black on #6aaa64'
+            keyboard[ord(letter) - ord('A')] = f'[{style}]{letter}[/]'
 
-        print_item.append(f"[{style}]{guess[i]}[/]")
+        print_item.append(f'[{style}]{guess[i]}[/]')
     return print_item
 
 
-# TODO: Rename list parameter
-def output_buffer(list):
+def output_buffer(list_to_print):
     console.clear()
     console.print("< WORDO >", justify="center")
     console.print("┌─┬─┬─┬─┬─┐", justify="center")
-    for i, item in enumerate(list):
+    for i, item in enumerate(list_to_print):
         console.print(f"│{item}│", justify="center")
 
-        if i <= len(list) - 2:
+        if i <= len(list_to_print) - 2:
             console.print("├─┼─┼─┼─┼─┤", justify="center")
     console.print("└─┴─┴─┴─┴─┘", justify="center")
 
@@ -279,6 +301,7 @@ def make_dict(stats):
     return lines
 
 
+# TODO: Convert hex colors to constant variables
 def view_stats():
     init_stats()
     console.clear()
