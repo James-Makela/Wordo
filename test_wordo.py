@@ -2,13 +2,18 @@ from wordo import get_target_word
 from wordo import score_guess
 from wordo import get_valid_words
 from wordo import is_correct
+from wordo import ask_for_guess
+from wordo import get_valid_words
+from pytest import MonkeyPatch
+
+monkeypatch = MonkeyPatch()
 
 
 def test_is_correct():
     assert not is_correct((1, 1, 1, 1, 1))
     assert not is_correct((2, 2, 2, 2, 1))
     assert not is_correct((0, 0, 0, 0, 0))
-    assert not is_correct((2, 2, 2, 2, 2))
+    assert is_correct((2, 2, 2, 2, 2))
 
 
 def test_get_valid_words():
@@ -21,6 +26,18 @@ def test_get_target_word():
     assert get_target_word(seed=0) == 'aback'
     assert get_target_word(seed=-1) == 'zonal'
     assert get_target_word(seed=600) == 'drone'
+
+
+def test_ask_for_guess(monkeypatch):
+    testlist = ['round', 'steam', 'zobra', 'panda']
+    valid_words = get_valid_words()
+
+    for word in testlist:
+        if word == 'zobra':
+            monkeypatch.setattr('builtins.input', lambda: word)
+            assert ask_for_guess(valid_words, '') is None
+        monkeypatch.setattr('builtins.input', lambda: word)
+        assert ask_for_guess(valid_words, '') == word
 
 
 def test_score_guess():
@@ -38,6 +55,7 @@ def main():
     test_score_guess()
     test_get_valid_words()
     test_is_correct()
+    test_ask_for_guess(monkeypatch)
 
 
 if __name__ == "__main__":
