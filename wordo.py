@@ -50,7 +50,7 @@ def play():
     # do the following in an iteration construct
     print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
     for i in range(MAX_ATTEMPTS):
-        output_buffer(print_list)
+        #output_buffer(print_list)
         guess = ask_for_guess(valid_words, print_list).upper()
         if guess.lower() == "exit":
             return
@@ -122,6 +122,7 @@ def ask_for_guess(valid_words, buffer):
 
     while guess is None:
         output_buffer(buffer)
+        console.print("Type 'exit' to return to the main menu", justify="center")
         console.print(f" {errors[error]} ", justify="center")
         guess, error = guess_validator(valid_words)
         if guess == "exit":
@@ -240,7 +241,6 @@ def output_buffer(list_to_print):
     console.print("".join(print_keyboard[:10]), justify="center")
     console.print(f" {''.join(print_keyboard[10:19])}", justify="center")
     console.print(f"  {''.join(print_keyboard[19:])}\n", justify="center")
-    console.print("Type 'exit' to return to the main menu", justify="center")
 
 
 def main_menu():
