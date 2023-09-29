@@ -56,8 +56,7 @@ def play():
             return
         score = score_guess(guess, word_of_the_day)
         # Put some of your own personality into this!
-        print("Result of your guess:")
-        # print(f"{format_score(guess, score)}\n")
+
         print_list[i] = "│".join(colour_score(guess, score))
         if is_correct(score):
             output_buffer(print_list)
@@ -117,27 +116,39 @@ def get_target_word(file_path=TARGET_WORDS, seed=None):
 
 
 def ask_for_guess(valid_words, buffer):
+    guess = None
+    error = 0
+    errors = ["", "[red on yellow]Invalid word[/]", "[red on yellow]Word already entered[/]"]
+
+    while guess is None:
+        output_buffer(buffer)
+        console.print(f" {errors[error]} ", justify="center")
+        guess, error = guess_validator(valid_words)
+        if guess == "exit":
+            return guess
+    words_entered.append(guess)
+    return guess
+
+
+def guess_validator(valid_words, override=None):
     """Requests a guess from the user directly from stdout/in
     Returns:
         str: the guess chosen by the user. Ensures guess is a valid word of correct length in lowercase
     """
-    guess = None
-    error_string = ""
-    guess_candidate = ""
-    while guess is None:
-        output_buffer(buffer)
-        console.print(f" {error_string} ", justify="center")
+    INVALID = 1
+    REPEAT = 2
+    if not override:
         guess_candidate = console.input(f"{' ' * (console.width // 2 - 8)}Guess: ").lower()
-        if guess_candidate == "exit":
-            return guess_candidate
-        if guess_candidate not in valid_words:
-            error_string = "[red on yellow]Invalid word[/]"
-        if guess_candidate in words_entered:
-            error_string = "[red on yellow]Word already entered[/]"
-        if guess_candidate in valid_words and guess_candidate not in words_entered:
-            guess = guess_candidate
-            words_entered.append(guess_candidate)
-    return guess_candidate
+    else:
+        guess_candidate = override
+    if guess_candidate == "exit":
+        return guess_candidate, 0
+    if guess_candidate not in valid_words:
+        return None, INVALID
+    if guess_candidate in words_entered:
+        return None, REPEAT
+    if guess_candidate in valid_words and guess_candidate not in words_entered:
+        return guess_candidate, 0
 
 
 def score_guess(guess, target):
@@ -197,12 +208,11 @@ def colour_score(guess, score):
     for i, letter in enumerate(guess):
         if score[i] == 0:
             style = "white on #666666"
-            # TODO: Simplify this
-            if "green" not in keyboard[ord(letter) - ord("A")] and "yellow" not in keyboard[ord(letter) - ord("A")]:
+            if "bold" not in keyboard[ord(letter) - ord("A")]:
                 keyboard[ord(letter) - ord("A")] = " "
         elif score[i] == 1:
             style = "bold black on #d1b036"
-            if "green" not in keyboard[ord(letter) - ord("A")]:
+            if "bold" not in keyboard[ord(letter) - ord("A")]:
                 keyboard[ord(letter) - ord("A")] = f"[{style}]{letter}[/]"
         elif score[i] == 2:
             style = "bold black on #6aaa64"
