@@ -8,7 +8,6 @@ from os.path import exists
 
 console = Console()
 """Guess-My-Word is a game where the player has to guess a word.
-<your description> 
 Author: James Makela
 Company: -
 Copyright: 2023
@@ -46,17 +45,15 @@ def play():
     word_of_the_day = get_target_word().upper()
     # build a list of valid words (words that can be entered in the UI):
     valid_words = get_valid_words()
+    # refresh the keyboard and used word list
     fresh_game()
-    # do the following in an iteration construct
+
     print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
     for i in range(MAX_ATTEMPTS):
-        #output_buffer(print_list)
         guess = ask_for_guess(valid_words, print_list).upper()
         if guess.lower() == "exit":
             return
         score = score_guess(guess, word_of_the_day)
-        # Put some of your own personality into this!
-
         print_list[i] = "│".join(colour_score(guess, score))
         if is_correct(score):
             output_buffer(print_list)
@@ -65,7 +62,7 @@ def play():
             console.print("Press enter to return to the menu", justify="center")
             input()
             return
-        # end iteration
+
     output_buffer(print_list)
     console.print("Try again next time", justify="center")
     console.print(f"The correct word was {word_of_the_day}", justify="center")
@@ -244,7 +241,6 @@ def output_buffer(list_to_print):
 
 
 def main_menu():
-
     while True:
         console.clear()
         console.print(
@@ -315,7 +311,6 @@ def make_dict(stats):
     return lines
 
 
-# TODO: Convert hex colors to constant variables
 def view_stats():
     init_stats()
     console.clear()
@@ -350,14 +345,9 @@ def fresh_game():
     words_entered = []
 
 
-def main(test=False):
-    if test:
-        import doctest
-        return doctest.testmod()
+def main():
     main_menu()
-    return "Goodbye"
 
 
 if __name__ == "__main__":
-    # print(main(test=True))
     main()
