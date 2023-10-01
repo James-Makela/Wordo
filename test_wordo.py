@@ -3,6 +3,7 @@ from wordo import score_guess
 from wordo import is_correct
 from wordo import guess_validator
 from wordo import get_valid_words
+from wordo import colour_score
 
 
 def test_is_correct():
@@ -24,16 +25,13 @@ def test_get_target_word():
     assert get_target_word(seed=600) == 'drone'
 
 
-def test_guess_validator(monkeypatch):
-    testlist = ['round', 'steam', 'zobra', 'panda']
+def test_guess_validator():
     valid_words = get_valid_words()
 
-    for word in testlist:
-
-        if word not in valid_words:
-            assert guess_validator(valid_words, word) == (None, 1)
-        else:
-            assert guess_validator(valid_words, word) == (word, 0)
+    assert guess_validator(valid_words, "round") == ("round", 0)
+    assert guess_validator(valid_words, "steam") == ("steam", 0)
+    assert guess_validator(valid_words, "panda") == ("panda", 0)
+    assert guess_validator(valid_words, "zobra") == (None, 1)
 
 
 def test_score_guess():
@@ -46,12 +44,22 @@ def test_score_guess():
     assert score_guess('train', 'tenor') == (2, 1, 0, 0, 1)
 
 
+def test_colour_score():
+    grey = "#666666"
+    yellow = "#d1b036"
+    green = "#6aaa64"
+    assert colour_score("H", (0,)) == [f"[white on {grey}]H[/]"]
+    assert colour_score("E", (1,)) == [f"[bold black on {yellow}]E[/]"]
+    assert colour_score("L", (2,)) == [f"[bold black on {green}]L[/]"]
+
+
 def main():
     test_get_target_word()
     test_score_guess()
     test_get_valid_words()
     test_is_correct()
     test_guess_validator()
+    test_colour_score()
 
 
 if __name__ == "__main__":
