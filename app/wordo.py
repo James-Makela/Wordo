@@ -28,8 +28,8 @@ EXACT = 2  # X, +: right letter, right place 🟩
 MAX_ATTEMPTS = 6
 WORD_LENGTH = 5
 
-ALL_WORDS = "../word-bank/all_words.txt"
-TARGET_WORDS = "../word-bank/target_words.txt"
+ALL_WORDS = "./word-bank/all_words.txt"
+TARGET_WORDS = "./word-bank/target_words.txt"
 
 words_entered = []
 keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
@@ -113,15 +113,13 @@ def get_target_word(file_path=TARGET_WORDS, seed=None):
 
 
 def ask_for_guess(valid_words, buffer):
-    guess = None
-    error = 0
-    errors = ["", "[red on yellow]Invalid word[/]", "[red on yellow]Word already entered[/]"]
-
-    while guess is None:
+    guess = ''
+    while guess is '' or guess.startswith('[red'):
+        error = guess
         output_buffer(buffer)
         console.print("Type 'exit' to return to the main menu", justify="center")
-        console.print(f" {errors[error]} ", justify="center")
-        guess, error = guess_validator(valid_words)
+        console.print(f" {error} ", justify="center")
+        guess = guess_validator(valid_words)
         if guess == "exit":
             return guess
     words_entered.append(guess)
@@ -133,20 +131,19 @@ def guess_validator(valid_words, override=None):
     Returns:
         str: the guess chosen by the user. Ensures guess is a valid word of correct length in lowercase
     """
-    INVALID = 1
-    REPEAT = 2
+    errors = ["[red on yellow]Invalid word[/]", "[red on yellow]Word already entered[/]"]
     if not override:
         guess_candidate = console.input(f"{' ' * (console.width // 2 - 8)}Guess: ").lower()
     else:
         guess_candidate = override
     if guess_candidate == "exit":
-        return guess_candidate, 0
+        return guess_candidate
     if guess_candidate not in valid_words:
-        return None, INVALID
+        return errors[0]
     if guess_candidate in words_entered:
-        return None, REPEAT
+        return errors[1]
     if guess_candidate in valid_words and guess_candidate not in words_entered:
-        return guess_candidate, 0
+        return guess_candidate
 
 
 def score_guess(guess, target):
