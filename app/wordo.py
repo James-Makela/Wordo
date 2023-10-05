@@ -46,6 +46,7 @@ words_entered = []
 keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
 keymap = [keyboard.index(letter) for letter in "QWERTYUIOPASDFGHJKLZXCVBNM"]
 stats_location = "./stats"
+print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
 
 
 def play():
@@ -59,22 +60,21 @@ def play():
     # refresh the keyboard and used word list
     fresh_game()
 
-    print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
     for i in range(MAX_ATTEMPTS):
-        guess = ask_for_guess(valid_words, print_list).upper()
+        guess = ask_for_guess(valid_words).upper()
         if guess.lower() == "exit":
             return
         score = score_guess(guess, word_of_the_day)
         print_list[i] = "│".join(colour_score(guess, score))
         if is_correct(score):
-            output_buffer(print_list)
+            output_buffer()
             console.print(f"Winner! Solved in {i + 1} guesses", justify="center")
             record_stats(True, i)
             console.print("Press enter to return to the menu", justify="center")
             input()
             return
 
-    output_buffer(print_list)
+    output_buffer()
     console.print("Try again next time", justify="center")
     console.print(f"The correct word was {word_of_the_day}", justify="center")
     record_stats(False)
@@ -121,11 +121,11 @@ def get_target_word(file_path=TARGET_WORDS, seed=None):
     return words_of_day[seed]
 
 
-def ask_for_guess(valid_words, buffer):
+def ask_for_guess(valid_words):
     guess = ''
     while guess == '' or guess.startswith('[red'):
         error = guess
-        output_buffer(buffer)
+        output_buffer()
         console.print("Type 'exit' to return to the main menu", justify="center")
         console.print(f" {error} ", justify="center")
         guess = guess_validator(valid_words)
@@ -226,14 +226,14 @@ def colour_score(guess, score):
     return print_item
 
 
-def output_buffer(list_to_print):
+def output_buffer():
     console.clear()
     console.print("< WORDO >", justify="center")
     console.print("┌─┬─┬─┬─┬─┐", justify="center")
-    for i, item in enumerate(list_to_print):
+    for i, item in enumerate(print_list):
         console.print(f"│{item}│", justify="center")
 
-        if i <= len(list_to_print) - 2:
+        if i <= len(print_list) - 2:
             console.print("├─┼─┼─┼─┼─┤", justify="center")
     console.print("└─┴─┴─┴─┴─┘", justify="center")
 
@@ -336,8 +336,10 @@ def view_stats():
 def fresh_game():
     global keyboard
     global words_entered
+    global print_list
     keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
     words_entered = []
+    print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
 
 
 def main():
