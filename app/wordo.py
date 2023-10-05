@@ -123,7 +123,7 @@ def get_target_word(file_path=TARGET_WORDS, seed=None):
 
 def ask_for_guess(valid_words, buffer):
     guess = ''
-    while guess is '' or guess.startswith('[red'):
+    while guess == '' or guess.startswith('[red'):
         error = guess
         output_buffer(buffer)
         console.print("Type 'exit' to return to the main menu", justify="center")
