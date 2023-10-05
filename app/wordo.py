@@ -28,8 +28,8 @@ EXACT = 2  # X, +: right letter, right place 🟩
 MAX_ATTEMPTS = 6
 WORD_LENGTH = 5
 
-ALL_WORDS = "./word-bank/all_words.txt"
-TARGET_WORDS = "./word-bank/target_words.txt"
+ALL_WORDS = "../word-bank/all_words.txt"
+TARGET_WORDS = "../word-bank/target_words.txt"
 
 words_entered = []
 keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
