@@ -258,6 +258,7 @@ def main_menu():
         if choice == "3":
             game_help()
         if choice == "4":
+            console.clear()
             sys.exit()
 
 
