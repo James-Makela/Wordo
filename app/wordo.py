@@ -31,6 +31,17 @@ WORD_LENGTH = 5
 ALL_WORDS = "./word-bank/all_words.txt"
 TARGET_WORDS = "./word-bank/target_words.txt"
 
+STATS_INIT = ["Games played: 0\n",
+              "Current streak: 0\n",
+              "Max streak: 0\n",
+              "Wins: 0\n"
+              "1: 0\n",
+              "2: 0\n",
+              "3: 0\n",
+              "4: 0\n",
+              "5: 0\n",
+              "6: 0\n"]
+
 words_entered = []
 keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
 keymap = [keyboard.index(letter) for letter in "QWERTYUIOPASDFGHJKLZXCVBNM"]
@@ -259,20 +270,8 @@ def main_menu():
 
 def init_stats():
     if not exists(stats_location):
-        strings = [
-            "Games played: 0\n",
-            "Current streak: 0\n",
-            "Max streak: 0\n",
-            "Wins: 0\n"
-            "1: 0\n",
-            "2: 0\n",
-            "3: 0\n",
-            "4: 0\n",
-            "5: 0\n",
-            "6: 0\n"
-        ]
         with open(stats_location, "w") as stats:
-            stats.writelines(strings)
+            stats.writelines(STATS_INIT)
 
 
 def record_stats(win, tries=0):
