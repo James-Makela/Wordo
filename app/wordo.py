@@ -75,9 +75,7 @@ def play():
 def is_correct(score):
     """Checks if the score is entirely correct and returns True if it is
     """
-    if score == (2, 2, 2, 2, 2):
-        return True
-    return False
+    return score == (2,) * 5
 
 
 def get_valid_words(file_path=ALL_WORDS):
