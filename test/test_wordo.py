@@ -1,9 +1,9 @@
-from wordo import get_target_word
-from wordo import score_guess
-from wordo import is_correct
-from wordo import guess_validator
-from wordo import get_valid_words
-from wordo import colour_score
+from app.wordo import get_target_word
+from app.wordo import score_guess
+from app.wordo import is_correct
+from app.wordo import guess_validator
+from app.wordo import get_valid_words
+from app.wordo import colour_score
 
 
 def test_is_correct():
