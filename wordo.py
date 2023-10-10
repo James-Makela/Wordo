@@ -264,16 +264,16 @@ def main_menu():
             "|  2 - View Stats   |\n"
             "|  3 - View Help    |\n"
             "|  4 - Quit         |\n", justify="center")
-        choice = input()
-        if choice == "1":
-            play()
-        if choice == "2":
-            view_stats()
-        if choice == "3":
-            game_help()
-        if choice == "4":
-            console.clear()
-            sys.exit()
+        match input():
+            case "1":
+                play()
+            case "2":
+                view_stats()
+            case "3":
+                game_help()
+            case "4":
+                console.clear()
+                sys.exit()
 
 
 def init_stats():
