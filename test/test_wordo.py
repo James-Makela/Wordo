@@ -28,10 +28,10 @@ def test_get_target_word():
 def test_guess_validator():
     valid_words = get_valid_words()
 
-    assert guess_validator(valid_words, "round") == "round"
-    assert guess_validator(valid_words, "steam") == "steam"
-    assert guess_validator(valid_words, "panda") == "panda"
-    assert guess_validator(valid_words, "zobra") == "[red on yellow]Invalid word[/]"
+    assert guess_validator(valid_words, override="round") == "round"
+    assert guess_validator(valid_words, override="steam") == "steam"
+    assert guess_validator(valid_words, override="panda") == "panda"
+    assert guess_validator(valid_words, override="zobra") == "[red on yellow]Invalid word[/]"
 
 
 def test_score_guess():

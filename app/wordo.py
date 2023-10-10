@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import math
 import random
 import sys
@@ -30,6 +31,7 @@ WORD_LENGTH = 5
 
 ALL_WORDS = "./word-bank/all_words.txt"
 TARGET_WORDS = "./word-bank/target_words.txt"
+STATS = "./stats"
 
 STATS_INIT = ["Games played: 0\n",
               "Current streak: 0\n",
@@ -42,11 +44,13 @@ STATS_INIT = ["Games played: 0\n",
               "5: 0\n",
               "6: 0\n"]
 
-words_entered = []
-keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
-keymap = [keyboard.index(letter) for letter in "QWERTYUIOPASDFGHJKLZXCVBNM"]
-stats_location = "./stats"
-print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
+
+class Display:
+    keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
+    print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
+
+
+KEYMAP = [Display.keyboard.index(letter) for letter in "QWERTYUIOPASDFGHJKLZXCVBNM"]
 
 
 def play():
@@ -57,15 +61,17 @@ def play():
     word_of_the_day = get_target_word().upper()
     # build a list of valid words (words that can be entered in the UI):
     valid_words = get_valid_words()
+    # Keep track of the words entered so far
+    words_entered = []
     # refresh the keyboard and used word list
     fresh_game()
 
     for i in range(MAX_ATTEMPTS):
-        guess = ask_for_guess(valid_words).upper()
+        guess = ask_for_guess(valid_words, words_entered).upper()
         if guess.lower() == "exit":
             return
         score = score_guess(guess, word_of_the_day)
-        print_list[i] = "│".join(colour_score(guess, score))
+        Display.print_list[i] = "│".join(colour_score(guess, score))
         if is_correct(score):
             output_buffer()
             console.print(f"Winner! Solved in {i + 1} guesses", justify="center")
@@ -121,25 +127,27 @@ def get_target_word(file_path=TARGET_WORDS, seed=None):
     return words_of_day[seed]
 
 
-def ask_for_guess(valid_words):
+def ask_for_guess(valid_words, words_entered):
     guess = ''
     while guess == '' or guess.startswith('[red'):
         error = guess
         output_buffer()
         console.print("Type 'exit' to return to the main menu", justify="center")
         console.print(f" {error} ", justify="center")
-        guess = guess_validator(valid_words)
+        guess = guess_validator(valid_words, words_entered)
         if guess == "exit":
             return guess
     words_entered.append(guess)
     return guess
 
 
-def guess_validator(valid_words, override=None):
+def guess_validator(valid_words, words_entered=None, override=None):
     """Requests a guess from the user directly from stdout/in
     Returns:
         str: the guess chosen by the user. Ensures guess is a valid word of correct length in lowercase
     """
+    if words_entered is None:
+        words_entered = []
     errors = ["[red on yellow]Invalid word[/]", "[red on yellow]Word already entered[/]"]
     if not override:
         guess_candidate = console.input(f"{' ' * (console.width // 2 - 8)}Guess: ").lower()
@@ -212,15 +220,15 @@ def colour_score(guess, score):
     for i, letter in enumerate(guess):
         if score[i] == 0:
             style = "white on #666666"
-            if "bold" not in keyboard[ord(letter) - ord("A")]:
-                keyboard[ord(letter) - ord("A")] = " "
+            if "bold" not in Display.keyboard[ord(letter) - ord("A")]:
+                Display.keyboard[ord(letter) - ord("A")] = " "
         elif score[i] == 1:
             style = "bold black on #d1b036"
-            if "bold" not in keyboard[ord(letter) - ord("A")]:
-                keyboard[ord(letter) - ord("A")] = f"[{style}]{letter}[/]"
+            if "bold" not in Display.keyboard[ord(letter) - ord("A")]:
+                Display.keyboard[ord(letter) - ord("A")] = f"[{style}]{letter}[/]"
         elif score[i] == 2:
             style = "bold black on #6aaa64"
-            keyboard[ord(letter) - ord("A")] = f"[{style}]{letter}[/]"
+            Display.keyboard[ord(letter) - ord("A")] = f"[{style}]{letter}[/]"
 
         print_item.append(f"[{style}]{guess[i]}[/]")
     return print_item
@@ -230,16 +238,16 @@ def output_buffer():
     console.clear()
     console.print("< WORDO >", justify="center")
     console.print("┌─┬─┬─┬─┬─┐", justify="center")
-    for i, item in enumerate(print_list):
+    for i, item in enumerate(Display.print_list):
         console.print(f"│{item}│", justify="center")
 
-        if i <= len(print_list) - 2:
+        if i <= len(Display.print_list) - 2:
             console.print("├─┼─┼─┼─┼─┤", justify="center")
     console.print("└─┴─┴─┴─┴─┘", justify="center")
 
     print_keyboard = []
-    for number in keymap:
-        print_keyboard.append(keyboard[number])
+    for number in KEYMAP:
+        print_keyboard.append(Display.keyboard[number])
 
     console.print("".join(print_keyboard[:10]), justify="center")
     console.print(f" {''.join(print_keyboard[10:19])}", justify="center")
@@ -269,14 +277,14 @@ def main_menu():
 
 
 def init_stats():
-    if not exists(stats_location):
-        with open(stats_location, "w") as stats:
+    if not exists(STATS):
+        with open(STATS, "w") as stats:
             stats.writelines(STATS_INIT)
 
 
 def record_stats(win, tries=0):
     strings = []
-    with open(stats_location) as stats:
+    with open(STATS) as stats:
         lines = make_dict(stats)
 
     if win:
@@ -294,7 +302,7 @@ def record_stats(win, tries=0):
     for key, value in lines.items():
         strings.append(f"{key}: {str(value)}\n")
 
-    with open(stats_location, "w") as stats:
+    with open(STATS, "w") as stats:
         stats.writelines(strings)
 
 
@@ -309,7 +317,7 @@ def make_dict(stats):
 def view_stats():
     init_stats()
     console.clear()
-    with open(stats_location) as stats:
+    with open(STATS) as stats:
         lines = make_dict(stats)
 
     wins = int(lines["Wins"])
@@ -334,12 +342,8 @@ def view_stats():
 
 
 def fresh_game():
-    global keyboard
-    global words_entered
-    global print_list
-    keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
-    words_entered = []
-    print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
+    Display.keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
+    Display.print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
 
 
 def main():
