@@ -326,6 +326,7 @@ def view_stats():
     names = []
 
     if not exists(f"stats/names"):
+        console.clear()
         console.print("No stats yet")
         input()
         return
@@ -349,6 +350,8 @@ def view_stats():
     with open(f"./stats/{file}") as stats:
         lines = make_dict(stats)
 
+    console.clear()
+    console.print(file.upper(), justify="center")
     wins = int(lines["Wins"])
     if wins != 0:
         console.print(f"Games played: {lines['Games played']}\n"
