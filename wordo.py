@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
-
-import math
-import random
-import sys
-
-from rich.console import Console
-from os.path import exists
-
-console = Console()
 """Guess-My-Word is a game where the player has to guess a word.
 Author: James Makela
 Company: -
 Copyright: 2023
 
 """
+import math
+import random
+import sys
+
+from rich.console import Console
+from os.path import exists
+from os import mkdir
+
+console = Console()
+
 # Your code must use PEP8
 # Your code must be compatible with Python 3.1x
 # You cannot use any libraries outside the python standard library without the explicit permission of your lecturer.
@@ -31,7 +32,6 @@ WORD_LENGTH = 5
 
 ALL_WORDS = "./word-bank/all_words.txt"
 TARGET_WORDS = "./word-bank/target_words.txt"
-STATS = "./stats"
 
 STATS_INIT = ["Games played: 0\n",
               "Current streak: 0\n",
@@ -45,45 +45,54 @@ STATS_INIT = ["Games played: 0\n",
               "6: 0\n"]
 
 
-class Display:
-    keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
-    print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
-
-
-KEYMAP = [Display.keyboard.index(letter) for letter in "QWERTYUIOPASDFGHJKLZXCVBNM"]
-
-
 def play():
     """Code that controls the interactive game play"""
     # Initialise stats file if it does not exist
-    init_stats()
+
     # select a word of the day:
     word_of_the_day = get_target_word().upper()
     # build a list of valid words (words that can be entered in the UI):
     valid_words = get_valid_words()
     # Keep track of the words entered so far
     words_entered = []
-    # refresh the keyboard and used word list
-    fresh_game()
+
+    keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
+    print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
+    keymap = [keyboard.index(letter) for letter in "QWERTYUIOPASDFGHJKLZXCVBNM"]
+
+    name = console.input(f"{' ' * (console.width // 2 - 8)}Name: ").lower()
+    init_stats(name)
 
     for i in range(MAX_ATTEMPTS):
-        guess = ask_for_guess(valid_words, words_entered).upper()
+        guess = ''
+        while guess == '' or guess.startswith("[red"):
+            error = ''
+            if guess.startswith("[red"):
+                error = guess
+            output_buffer(print_list, keymap, keyboard, word_of_the_day)
+
+            console.print("Type 'exit' to return to the main menu", justify="center")
+            console.print(f" {error} ", justify="center")
+            guess = ask_for_guess(valid_words)
         if guess.lower() == "exit":
             return
+
+        guess = guess.upper()
         score = score_guess(guess, word_of_the_day)
-        Display.print_list[i] = "│".join(colour_score(guess, score))
+        print_list[i] = "│".join(colour_score(guess, score, keyboard))
+
         if is_correct(score):
-            output_buffer()
+            output_buffer(print_list, keymap, keyboard, word_of_the_day)
             console.print(f"Winner! Solved in {i + 1} guesses", justify="center")
-            record_stats(True, i)
+            record_stats(True, name, i)
             console.print("Press enter to return to the menu", justify="center")
             input()
             return
 
-    output_buffer()
+    output_buffer(print_list, keymap, keyboard)
     console.print("Try again next time", justify="center")
     console.print(f"The correct word was {word_of_the_day}", justify="center")
-    record_stats(False)
+    record_stats(False, name)
     console.print("Press enter to return to the menu", justify="center")
     input()
     return True
@@ -127,28 +136,12 @@ def get_target_word(file_path=TARGET_WORDS, seed=None):
     return words_of_day[seed]
 
 
-def ask_for_guess(valid_words, words_entered):
-    guess = ''
-    while guess == '' or guess.startswith('[red'):
-        error = guess
-        output_buffer()
-        console.print("Type 'exit' to return to the main menu", justify="center")
-        console.print(f" {error} ", justify="center")
-        guess = guess_validator(valid_words, words_entered)
-        if guess == "exit":
-            return guess
-    words_entered.append(guess)
-    return guess
-
-
-def guess_validator(valid_words, words_entered=None, override=None):
+def ask_for_guess(valid_words, override=None):
     """Requests a guess from the user directly from stdout/in
     Returns:
         str: the guess chosen by the user. Ensures guess is a valid word of correct length in lowercase
     """
-    if words_entered is None:
-        words_entered = []
-    errors = ["[red on yellow]Invalid word[/]", "[red on yellow]Word already entered[/]"]
+    error = "[red on yellow]Invalid word[/]"
     if not override:
         guess_candidate = console.input(f"{' ' * (console.width // 2 - 8)}Guess: ").lower()
     else:
@@ -156,10 +149,8 @@ def guess_validator(valid_words, words_entered=None, override=None):
     if guess_candidate == "exit":
         return guess_candidate
     if guess_candidate not in valid_words:
-        return errors[0]
-    if guess_candidate in words_entered:
-        return errors[1]
-    if guess_candidate in valid_words and guess_candidate not in words_entered:
+        return error
+    if guess_candidate in valid_words:
         return guess_candidate
 
 
@@ -214,40 +205,42 @@ def game_help():
     input()
 
 
-def colour_score(guess, score):
+def colour_score(guess, score, keyboard=['']*26):
     print_item = []
     style = ""
     for i, letter in enumerate(guess):
         if score[i] == 0:
             style = "white on #666666"
-            if "bold" not in Display.keyboard[ord(letter) - ord("A")]:
-                Display.keyboard[ord(letter) - ord("A")] = " "
+            if "bold" not in keyboard[ord(letter) - ord("A")]:
+                keyboard[ord(letter) - ord("A")] = " "
         elif score[i] == 1:
             style = "bold black on #d1b036"
-            if "bold" not in Display.keyboard[ord(letter) - ord("A")]:
-                Display.keyboard[ord(letter) - ord("A")] = f"[{style}]{letter}[/]"
+            if "bold" not in keyboard[ord(letter) - ord("A")]:
+                keyboard[ord(letter) - ord("A")] = f"[{style}]{letter}[/]"
         elif score[i] == 2:
             style = "bold black on #6aaa64"
-            Display.keyboard[ord(letter) - ord("A")] = f"[{style}]{letter}[/]"
+            keyboard[ord(letter) - ord("A")] = f"[{style}]{letter}[/]"
 
         print_item.append(f"[{style}]{guess[i]}[/]")
     return print_item
 
 
-def output_buffer():
+def output_buffer(print_list, keymap, keyboard, word_of_day=""):
     console.clear()
     console.print("< WORDO >", justify="center")
     console.print("┌─┬─┬─┬─┬─┐", justify="center")
-    for i, item in enumerate(Display.print_list):
+    for i, item in enumerate(print_list):
         console.print(f"│{item}│", justify="center")
 
-        if i <= len(Display.print_list) - 2:
+        if i <= len(print_list) - 2:
             console.print("├─┼─┼─┼─┼─┤", justify="center")
     console.print("└─┴─┴─┴─┴─┘", justify="center")
 
+    console.print(f"word: {word_of_day}")
+
     print_keyboard = []
-    for number in KEYMAP:
-        print_keyboard.append(Display.keyboard[number])
+    for number in keymap:
+        print_keyboard.append(keyboard[number])
 
     console.print("".join(print_keyboard[:10]), justify="center")
     console.print(f" {''.join(print_keyboard[10:19])}", justify="center")
@@ -257,6 +250,7 @@ def output_buffer():
 def main_menu():
     while True:
         console.clear()
+
         console.print(
             "Welcome to Wordo, the word guessing game.\n"
             "Guess the 5 letter word in 6 tries or less.\n\n"
@@ -276,15 +270,28 @@ def main_menu():
                 sys.exit()
 
 
-def init_stats():
-    if not exists(STATS):
-        with open(STATS, "w") as stats:
+def init_stats(user_name):
+    if not exists("./stats/"):
+        mkdir("./stats/")
+
+    names = []
+    if exists(f"./stats/names"):
+        with open(f"./stats/names", "r") as names_file:
+            for line in names_file:
+                names.append(line.strip())
+
+    with open(f"./stats/names", "a") as names_file:
+        if user_name not in names:
+            names_file.writelines(f"{user_name.lower()}\n")
+
+    if not exists(f"./stats/{user_name}"):
+        with open(f"./stats/{user_name}", "w") as stats:
             stats.writelines(STATS_INIT)
 
 
-def record_stats(win, tries=0):
+def record_stats(win, name, tries=0):
     strings = []
-    with open(STATS) as stats:
+    with open(f"./stats/{name}") as stats:
         lines = make_dict(stats)
 
     if win:
@@ -302,7 +309,7 @@ def record_stats(win, tries=0):
     for key, value in lines.items():
         strings.append(f"{key}: {str(value)}\n")
 
-    with open(STATS, "w") as stats:
+    with open(f"./stats/{name}", "w") as stats:
         stats.writelines(strings)
 
 
@@ -315,9 +322,31 @@ def make_dict(stats):
 
 
 def view_stats():
-    init_stats()
     console.clear()
-    with open(STATS) as stats:
+    names = []
+
+    if not exists(f"stats/names"):
+        console.print("No stats yet")
+        input()
+        return
+
+    with open(f"./stats/names") as stats:
+        for line in stats:
+            console.print(line.upper(), justify="center")
+            names.append(line.strip())
+
+    console.print("Enter the name for the stats you would like to view, or type 'exit' to exit", justify="center")
+    file = ''
+    while file == '':
+        name = console.input(f"{' ' * (console.width // 2 - 8)}Name: ").lower()
+        if name in names:
+            file = name
+        if name == 'exit':
+            return
+
+    init_stats(file)
+
+    with open(f"./stats/{file}") as stats:
         lines = make_dict(stats)
 
     wins = int(lines["Wins"])
@@ -339,11 +368,6 @@ def view_stats():
     console.print("Press enter to go back to the menu")
     input()
     return
-
-
-def fresh_game():
-    Display.keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
-    Display.print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
 
 
 def main():

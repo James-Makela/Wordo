@@ -1,7 +1,7 @@
 from wordo import get_target_word
 from wordo import score_guess
 from wordo import is_correct
-from wordo import guess_validator
+from wordo import ask_for_guess
 from wordo import get_valid_words
 from wordo import colour_score
 
@@ -25,13 +25,13 @@ def test_get_target_word():
     assert get_target_word(seed=600) == 'drone'
 
 
-def test_guess_validator():
+def test_ask_for_guess():
     valid_words = get_valid_words()
 
-    assert guess_validator(valid_words, override="round") == "round"
-    assert guess_validator(valid_words, override="steam") == "steam"
-    assert guess_validator(valid_words, override="panda") == "panda"
-    assert guess_validator(valid_words, override="zobra") == "[red on yellow]Invalid word[/]"
+    assert ask_for_guess(valid_words, override="round") == "round"
+    assert ask_for_guess(valid_words, override="steam") == "steam"
+    assert ask_for_guess(valid_words, override="panda") == "panda"
+    assert ask_for_guess(valid_words, override="zobra") == "[red on yellow]Invalid word[/]"
 
 
 def test_score_guess():
