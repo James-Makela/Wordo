@@ -60,7 +60,7 @@ def play():
     print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
     keymap = [keyboard.index(letter) for letter in "QWERTYUIOPASDFGHJKLZXCVBNM"]
 
-    name = console.input(f"{' ' * (console.width // 2 - 8)}Name: ").lower()
+    name = console.input(f"{' ' * (console.width // 2 - 8)}Name: ").upper()
     init_stats(name)
 
     for i in range(MAX_ATTEMPTS):
@@ -235,8 +235,6 @@ def output_buffer(print_list, keymap, keyboard, word_of_day=""):
         if i <= len(print_list) - 2:
             console.print("├─┼─┼─┼─┼─┤", justify="center")
     console.print("└─┴─┴─┴─┴─┘", justify="center")
-
-    console.print(f"word: {word_of_day}")
 
     print_keyboard = []
     for number in keymap:

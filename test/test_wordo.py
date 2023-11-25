@@ -58,7 +58,6 @@ def main():
     test_score_guess()
     test_get_valid_words()
     test_is_correct()
-    test_guess_validator()
     test_colour_score()
 
 
