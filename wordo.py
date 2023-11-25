@@ -45,7 +45,7 @@ STATS_INIT = ["Games played: 0\n",
               "6: 0\n"]
 
 
-def play():
+def play(name):
     """Code that controls the interactive game play"""
     # Initialise stats file if it does not exist
 
@@ -59,9 +59,6 @@ def play():
     keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
     print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
     keymap = [keyboard.index(letter) for letter in "QWERTYUIOPASDFGHJKLZXCVBNM"]
-
-    name = console.input(f"{' ' * (console.width // 2 - 8)}Name: ").upper()
-    init_stats(name)
 
     for i in range(MAX_ATTEMPTS):
         guess = ''
@@ -205,7 +202,9 @@ def game_help():
     input()
 
 
-def colour_score(guess, score, keyboard=['']*26):
+def colour_score(guess, score, keyboard=None):
+    if keyboard is None:
+        keyboard = ['']*26
     print_item = []
     style = ""
     for i, letter in enumerate(guess):
@@ -246,6 +245,8 @@ def output_buffer(print_list, keymap, keyboard, word_of_day=""):
 
 
 def main_menu():
+
+    name = init_stats()
     while True:
         console.clear()
 
@@ -255,20 +256,23 @@ def main_menu():
             "|  1 - Play Game    |\n"
             "|  2 - View Stats   |\n"
             "|  3 - View Help    |\n"
-            "|  4 - Quit         |\n", justify="center")
+            "|  4 - Change User  |\n"
+            "|  5 - Quit         |\n", justify="center")
         match input():
             case "1":
-                play()
+                play(name)
             case "2":
-                view_stats()
+                view_stats(name)
             case "3":
                 game_help()
             case "4":
+                init_stats()
+            case "5":
                 console.clear()
                 sys.exit()
 
 
-def init_stats(user_name):
+def init_stats():
     if not exists("./stats/"):
         mkdir("./stats/")
 
@@ -276,7 +280,26 @@ def init_stats(user_name):
     if exists(f"./stats/names"):
         with open(f"./stats/names", "r") as names_file:
             for line in names_file:
-                names.append(line.strip())
+                if len(line) > 1:
+                    names.append(line.strip())
+
+        console.clear()
+        console.print("Please Select a name, or enter a new name", justify="center")
+        for i, name in enumerate(names):
+            console.print(f"{i + 1}. {name.upper()}", justify="center")
+
+        user_name = None
+        while user_name is None:
+            choice = input()
+            try:
+                user_name = names[int(choice)-1]
+            except (IndexError,  ValueError):
+                user_name = choice
+
+    else:
+        console.clear()
+        console.print("Please enter your name to begin.")
+        user_name = console.input(f"{' ' * (console.width // 2 - 8)}Name: ").upper()
 
     with open(f"./stats/names", "a") as names_file:
         if user_name not in names:
@@ -285,6 +308,8 @@ def init_stats(user_name):
     if not exists(f"./stats/{user_name}"):
         with open(f"./stats/{user_name}", "w") as stats:
             stats.writelines(STATS_INIT)
+
+    return user_name
 
 
 def record_stats(win, name, tries=0):
@@ -319,37 +344,28 @@ def make_dict(stats):
     return lines
 
 
-def view_stats():
+def view_stats(user_name):
     console.clear()
     names = []
 
-    if not exists(f"stats/names"):
-        console.clear()
-        console.print("No stats yet")
-        input()
-        return
+    # if not exists(f"stats/names"):
+    #     console.clear()
+    #     console.print("No stats yet")
+    #     input()
+    #     return
+    #
+    # with open(f"./stats/names") as stats:
+    #     for line in stats:
+    #         console.print(line.upper(), justify="center")
+    #         names.append(line.strip())
 
-    with open(f"./stats/names") as stats:
-        for line in stats:
-            console.print(line.upper(), justify="center")
-            names.append(line.strip())
+    # console.print("Enter the name for the stats you would like to view, or type 'exit' to exit", justify="center")
 
-    console.print("Enter the name for the stats you would like to view, or type 'exit' to exit", justify="center")
-    file = ''
-    while file == '':
-        name = console.input(f"{' ' * (console.width // 2 - 8)}Name: ").lower()
-        if name in names:
-            file = name
-        if name == 'exit':
-            return
-
-    init_stats(file)
-
-    with open(f"./stats/{file}") as stats:
+    with open(f"./stats/{user_name}") as stats:
         lines = make_dict(stats)
 
     console.clear()
-    console.print(file.upper(), justify="center")
+    console.print(user_name.upper(), justify="center")
     wins = int(lines["Wins"])
     if wins != 0:
         console.print(f"Games played: {lines['Games played']}\n"
