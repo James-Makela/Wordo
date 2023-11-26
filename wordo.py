@@ -266,7 +266,7 @@ def main_menu():
             case "3":
                 game_help()
             case "4":
-                init_stats()
+                main_menu()
             case "5":
                 console.clear()
                 sys.exit()
