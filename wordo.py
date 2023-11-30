@@ -348,19 +348,6 @@ def view_stats(user_name):
     console.clear()
     names = []
 
-    # if not exists(f"stats/names"):
-    #     console.clear()
-    #     console.print("No stats yet")
-    #     input()
-    #     return
-    #
-    # with open(f"./stats/names") as stats:
-    #     for line in stats:
-    #         console.print(line.upper(), justify="center")
-    #         names.append(line.strip())
-
-    # console.print("Enter the name for the stats you would like to view, or type 'exit' to exit", justify="center")
-
     with open(f"./stats/{user_name}") as stats:
         lines = make_dict(stats)
 
