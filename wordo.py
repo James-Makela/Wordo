@@ -6,6 +6,7 @@ Copyright: 2023
 
 """
 import math
+import os
 import random
 import sys
 
@@ -253,11 +254,11 @@ def main_menu():
         console.print(
             "Welcome to Wordo, the word guessing game.\n"
             "Guess the 5 letter word in 6 tries or less.\n\n"
-            "|  1 - Play Game    |\n"
-            "|  2 - View Stats   |\n"
-            "|  3 - View Help    |\n"
-            "|  4 - Change User  |\n"
-            "|  5 - Quit         |\n", justify="center")
+            "|  1 - Play Game       |\n"
+            "|  2 - View Stats      |\n"
+            "|  3 - View Help       |\n"
+            "|  4 - User Management |\n"
+            "|  5 - Quit            |\n", justify="center")
         match input():
             case "1":
                 play(name)
@@ -266,10 +267,47 @@ def main_menu():
             case "3":
                 game_help()
             case "4":
-                main_menu()
+                user_menu()
             case "5":
                 console.clear()
                 sys.exit()
+
+
+def user_menu():
+    while True:
+        console.clear()
+
+        console.print(
+            "User Menu\n\n"
+            "|  1 - Change User     |\n"
+            "|  2 - Add user        |\n"
+            "|  3 - Remove User     |\n", justify="center")
+
+        match input():
+            case "1":
+                main_menu()
+            case "2":
+                main_menu()
+            case "3":
+                delete_user()
+
+
+def delete_user():
+    console.clear()
+    console.print("Please Select a name to delete", justify="center")
+    names = display_names()
+    choice = input()
+    name = names[int(choice) - 1]
+    try:
+        names.remove(name)
+        os.remove(f"./stats/{name}")
+    except (IndexError, ValueError):
+        return
+    # Next we need to remove the name from the names file then we need to remove the user file for that name
+    with open("./stats/names", "w") as file:
+        for name in names:
+            file.writelines(name)
+        file.writelines("\n")
 
 
 def init_stats():
@@ -277,20 +315,16 @@ def init_stats():
         mkdir("./stats/")
 
     names = []
-    if exists(f"./stats/names"):
-        with open(f"./stats/names", "r") as names_file:
-            for line in names_file:
-                if len(line) > 1:
-                    names.append(line.strip())
-
-        console.clear()
-        console.print("Please Select a name, or enter a new name", justify="center")
-        for i, name in enumerate(names):
-            console.print(f"{i + 1}. {name.upper()}", justify="center")
+    console.clear()
+    console.print("Please Select a name, or enter a new name", justify="center")
+    if exists("./stats/names"):
+        names = display_names()
 
         user_name = None
         while user_name is None:
             choice = input()
+            if choice is "":
+                choice = "1"
             try:
                 user_name = names[int(choice)-1]
             except (IndexError,  ValueError):
@@ -310,6 +344,19 @@ def init_stats():
             stats.writelines(STATS_INIT)
 
     return user_name
+
+
+def display_names():
+    names = []
+    if exists(f"./stats/names"):
+        with open(f"./stats/names", "r") as names_file:
+            for line in names_file:
+                if len(line) > 1:
+                    names.append(line.strip())
+
+        for i, name in enumerate(names):
+            console.print(f"{i + 1}. {name.upper()}", justify="center")
+    return names
 
 
 def record_stats(win, name, tries=0):
