@@ -55,7 +55,6 @@ def play(name):
     # build a list of valid words (words that can be entered in the UI):
     valid_words = get_valid_words()
     # Keep track of the words entered so far
-    words_entered = []
 
     keyboard = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
     print_list = [" │ │ │ │ "] * MAX_ATTEMPTS
@@ -323,7 +322,7 @@ def init_stats():
         user_name = None
         while user_name is None:
             choice = input()
-            if choice is "":
+            if choice == "":
                 choice = "1"
             try:
                 user_name = names[int(choice)-1]
@@ -335,7 +334,7 @@ def init_stats():
         console.print("Please enter your name to begin.")
         user_name = console.input(f"{' ' * (console.width // 2 - 8)}Name: ").upper()
 
-    with open(f"./stats/names", "a") as names_file:
+    with open("./stats/names", "a") as names_file:
         if user_name not in names:
             names_file.writelines(f"{user_name.lower()}\n")
 
@@ -348,8 +347,8 @@ def init_stats():
 
 def display_names():
     names = []
-    if exists(f"./stats/names"):
-        with open(f"./stats/names", "r") as names_file:
+    if exists("./stats/names"):
+        with open("./stats/names", "r") as names_file:
             for line in names_file:
                 if len(line) > 1:
                     names.append(line.strip())
@@ -393,7 +392,6 @@ def make_dict(stats):
 
 def view_stats(user_name):
     console.clear()
-    names = []
 
     with open(f"./stats/{user_name}") as stats:
         lines = make_dict(stats)
