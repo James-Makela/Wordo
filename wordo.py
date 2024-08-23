@@ -354,22 +354,20 @@ def view_stats(user_name):
     console.clear()
     console.print(user_name.upper(), justify="center")
     wins = int(lines["Wins"])
+
     if wins != 0:
+        bars = [math.ceil(int(x) / wins * 25) for x in lines.values()]
         console.print(f"Games played: {lines['Games played']}\n"
                       f"Current streak: {lines['Current streak']}\n"
                       f"Max streak: {lines['Max streak']}\n"
                       f"Win %: {round(wins / int(lines['Games played']) * 100)}\n"
-                      f"Guess Distribution:\n"
-                      f"1: [#6aaa64]{math.ceil(int(lines['1']) / wins * 50) * '❚'}\n[/]"
-                      f"2: [#6aaa64]{math.ceil(int(lines['2']) / wins * 50) * '❚'}\n[/]"
-                      f"3: [#6aaa64]{math.ceil(int(lines['3']) / wins * 50) * '❚'}\n[/]"
-                      f"4: [#6aaa64]{math.ceil(int(lines['4']) / wins * 50) * '❚'}\n[/]"
-                      f"5: [#6aaa64]{math.ceil(int(lines['5']) / wins * 50) * '❚'}\n[/]"
-                      f"6: [#6aaa64]{math.ceil(int(lines['6']) / wins * 50) * '❚'}\n[/]")
+                      f"Guess Distribution:", justify="center")
+        for i, bar in enumerate(bars[4:]):
+            console.print(f"{i + 1}|[#6aaa64]{bar * '❚'}{(25 - bar) * '\u2800'}", justify="center")
     else:
-        console.print("No wins yet")
+        console.print("No wins yet", justify="center")
 
-    console.print("Press enter to go back to the menu")
+    console.print("\nPress enter to go back to the menu", justify="center")
     input()
     return
 
